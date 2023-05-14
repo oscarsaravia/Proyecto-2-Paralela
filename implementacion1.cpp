@@ -40,7 +40,7 @@ void encrypt(long key, char *ciph)
 }
 
 // palabra clave a buscar en texto descifrado para determinar si se rompio el codigo
-char search[] = "texto a cifrar es";
+char search[] = "es una prueba de";
 int tryKey(long key, char *ciph, int ciphlen)
 {
   char temp[ciphlen + 1]; // Add space for null terminator
@@ -63,6 +63,7 @@ int main(int argc, char *argv[])
   long mylower, myupper;
   MPI_Status st;
   MPI_Request req;
+  double s_time, e_time;
 
   if (argc != 3)
   {
@@ -101,7 +102,6 @@ int main(int argc, char *argv[])
   memcpy(data, filedata, fsize);
   free(filedata);
 
-  printf("LECTURA!!!%s \n", data);
   // char eltexto[] = "Esta es una prueba de proyecto 2";
   int ciphlen = strlen(data);
 
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 
   // non blocking receive, revisar en el for si alguien ya encontro
   MPI_Irecv(&found, 1, MPI_LONG, MPI_ANY_SOURCE, MPI_ANY_TAG, comm, &req);
-
+  s_time = MPI_Wtime();
   for (long long i = id; i < upper; i += N)
   {
     MPI_Test(&req, &ready, MPI_STATUS_IGNORE);
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
     if (tryKey(i, cipher, ciphlen))
     {
       found = i;
-      printf("Process %d found the key KEY %d\n", id, found);
+      printf("Process %d found the key\n", id);
       for (int node = 0; node < N; node++)
       {
         MPI_Send(&found, 1, MPI_LONG, node, 0, comm); // avisar a otros
@@ -148,8 +148,10 @@ int main(int argc, char *argv[])
   {
     MPI_Wait(&req, &st);
     decrypt(found, cipher, ciphlen);
+    e_time = MPI_Wtime();
     printf("Key = %li\n\n", found);
     printf("%s\n", cipher);
+    printf("\Ran in %f s\n", (e_time-s_time));
   }
   printf("Process %d exiting\n", id);
 

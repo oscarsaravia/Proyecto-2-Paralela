@@ -40,7 +40,7 @@ void encrypt(long key, char *ciph)
 }
 
 // palabra clave a buscar en texto descifrado para determinar si se rompio el codigo
-char search[] = "Esta es una prueba de proyecto 2";
+char search[] = "es una prueba de";
 int tryKey(long key, char *ciph, int ciphlen)
 {
   char temp[ciphlen + 1]; // Add space for null terminator
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
   memcpy(data, filedata, fsize);
   free(filedata);
 
-  printf("LECTURA!!!%s \n", data);
+//   printf("LECTURA!!!%s \n", data);
   // char eltexto[] = "Esta es una prueba de proyecto 2";
   int ciphlen = strlen(data);
 
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
 
   // non blocking receive, revisar en el for si alguien ya encontro
   MPI_Irecv(&found, 1, MPI_LONG, MPI_ANY_SOURCE, MPI_ANY_TAG, comm, &req);
-  int blockSize = 1000;
+  int blockSize = 1000000;
   for (long long i = id * blockSize; i < upper; i += (N*blockSize))
   {
     for (long long j = i ; j < blockSize * N + i; j += 1){
